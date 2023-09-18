@@ -34,7 +34,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.server.players.PlayerList;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Cause;
 import org.spongepowered.api.event.EventContext;
@@ -208,20 +207,4 @@ public abstract class ServerLoginPacketListenerImplMixin implements ServerLoginP
         return event.isCancelled();
     }
 
-    /* @Inject(method = "handleHello(Lnet/minecraft/network/protocol/login/ServerboundHelloPacket;)V", // TODO SF 1.19.4
-        at = @At(
-            value = "FIELD",
-            target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;READY_TO_ACCEPT:Lnet/minecraft/server/network/ServerLoginPacketListenerImpl$State;",
-            opcode = Opcodes.GETSTATIC),
-        cancellable = true) */
-    private void impl$fireAuthEventOffline(final CallbackInfo ci) {
-        // Move this check up here, so that the UUID isn't null when we fire the event
-        if (!this.gameProfile.isComplete()) {
-            this.gameProfile = this.shadow$createFakeProfile(this.gameProfile);
-        }
-
-        if (this.bridge$fireAuthEvent()) {
-            ci.cancel();
-        }
-    }
 }
